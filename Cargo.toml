@@ -1,0 +1,11 @@
+[package]
+name = "rlua-builders"
+version = "0.1.0"
+authors = ["Yan Soares Couto <yancouto@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+rlua = "0.17"
+
+[dev-dependencies]
+rlua-builders-derive = {path = "rlua-builders-derive"}
