@@ -2,7 +2,7 @@ local function assertFails(f, ...)
     assert(pcall(f, ...) == false)
 end
 
-return function(unit, tup, named)
+return function(unit, tup, named, ce)
     assert(unit ~= nil)
     assert(type(unit) == 'userdata')
 
@@ -17,5 +17,12 @@ return function(unit, tup, named)
     assertFails(function() named{} end)
     assertFails(function() named{a = "asd", b = "asd"} end)
 
-    return unit, t, n
+    ces = {
+        ce.Unit,
+        ce.Tup(0.1, 42),
+        ce.Named {foo = "baz", bar = 0}
+    }
+    ce.Tup(0, nil)
+
+    return unit, t, n, ces
 end
