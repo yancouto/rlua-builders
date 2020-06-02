@@ -1,6 +1,18 @@
 use proc_macro::TokenStream;
-use syn::{parse_macro_input, DeriveInput, Data, Fields};
+use syn::{parse_macro_input, DeriveInput, Data, Fields, Ident};
+use proc_macro2::{TokenStream as TokenStream2};
 use quote::quote;
+
+
+fn from_unit(name: Ident) -> TokenStream2 {
+    quote! {
+        impl<'s> LuaStructBuilder<'s, Self> for #name {
+            fn builder(ctx: Context<'s>) -> Self {
+                Self
+            }
+        }
+    }
+}
 
 #[proc_macro_derive(LuaStructBuilder)]
 pub fn derive_struct_builder(input: TokenStream) -> TokenStream {
@@ -12,20 +24,12 @@ pub fn derive_struct_builder(input: TokenStream) -> TokenStream {
         _ => panic!("Must annotate struct"),
     };
 
-    match ds.fields {
-        Fields::Unit => (),
+    let code = match ds.fields {
+        Fields::Unit => from_unit(name),
         _ => panic!("Must be unit!"),
     };
 
-    let expanded = quote! {
-        impl<'s> LuaStructBuilder<'s, Self> for #name {
-            fn builder(ctx: Context<'s>) -> Self {
-                Self
-            }
-        }
-    };
-
-    TokenStream::from(expanded)
+    TokenStream::from(code)
 }
 
 #[proc_macro_derive(UserData)]
