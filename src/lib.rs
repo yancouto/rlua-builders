@@ -1,9 +1,5 @@
-use rlua::{Context, Result, Table, ToLua};
+use rlua::{Context, Result, ToLua};
 
-pub trait LuaStructBuilder<'s, T: ToLua<'s>> {
+pub trait LuaBuilder<'s, T: ToLua<'s>> {
     fn builder(ctx: Context<'s>) -> Result<T>;
-}
-
-pub trait LuaEnumBuilder<'s> {
-    fn builder(ctx: Context<'s>) -> Result<Table<'s>>;
 }

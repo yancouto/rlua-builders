@@ -4,19 +4,19 @@ use rlua_builders_derive::*;
 
 #[test]
 fn test_all() {
-    #[derive(LuaStructBuilder, UserData, Clone, PartialEq, Debug)]
+    #[derive(LuaBuilder, UserData, Clone, PartialEq, Debug)]
     struct Unit;
 
-    #[derive(LuaStructBuilder, UserData, Clone, PartialEq, Debug)]
+    #[derive(LuaBuilder, UserData, Clone, PartialEq, Debug)]
     struct Tup(i32, String);
 
-    #[derive(LuaStructBuilder, UserData, Clone, PartialEq, Debug)]
+    #[derive(LuaBuilder, UserData, Clone, PartialEq, Debug)]
     struct Named {
         a: i32,
         b: String,
     };
 
-    #[derive(LuaEnumBuilder, UserData, Clone, PartialEq, Debug)]
+    #[derive(LuaBuilder, UserData, Clone, PartialEq, Debug)]
     enum ComplexEnum {
         Unit,
         Tup(f32, Option<i32>),
