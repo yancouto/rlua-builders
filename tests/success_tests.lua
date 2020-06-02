@@ -20,7 +20,8 @@ return function(unit, tup, named, ce)
     ces = {
         ce.Unit,
         ce.Tup(0.1, 42),
-        ce.Named {foo = "baz", bar = 0}
+        ce.Named {foo = "baz", bar = 0},
+        ce.Composite(tup(0, "zero")),
     }
     ce.Tup(0, nil)
 

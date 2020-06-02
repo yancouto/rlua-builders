@@ -21,6 +21,8 @@ fn test_all() {
         Unit,
         Tup(f32, Option<i32>),
         Named { foo: String, bar: u8 },
+        // also testing tuples with a single thing inside
+        Composite(Tup),
     };
 
     let lua = rlua::Lua::new();
@@ -56,7 +58,8 @@ fn test_all() {
             ComplexEnum::Named {
                 foo: "baz".to_owned(),
                 bar: 0
-            }
+            },
+            ComplexEnum::Composite(Tup(0, "zero".to_owned())),
         ]
     );
 }

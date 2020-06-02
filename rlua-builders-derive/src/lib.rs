@@ -5,23 +5,22 @@ use syn::{parse_macro_input, Data, DeriveInput, Fields, FieldsNamed, FieldsUnnam
 
 fn builder_for_unnamed(name: TokenStream2, fields: &FieldsUnnamed) -> TokenStream2 {
     let i = (0..fields.unnamed.len()).map(Index::from);
+    let types = fields.unnamed.iter().map(|f| &f.ty);
     quote! {
-        ctx.create_function(|_, args: #fields| {
+        ctx.create_function(|_, args: (#(#types,)*)| {
             Ok(#name (#(args.#i,)*))
         })
     }
 }
 
 fn builder_for_named(name: TokenStream2, fields: &FieldsNamed) -> TokenStream2 {
-    let names = fields.named.iter().map(|x| x.ident.clone());
-    let types = fields.named.iter().map(|x| x.ty.clone());
+    let names = fields.named.iter().map(|x| &x.ident);
+    let types = fields.named.iter().map(|x| &x.ty);
 
     quote! {
         ctx.create_function(|_, data: rlua::Table<'s>| {
             Ok(#name {
-                #(
-                    #names: data.get::<_, #types>(stringify!(#names))?,
-                )*
+                #( #names: data.get::<_, #types>(stringify!(#names))?, )*
             })
         })
     }
