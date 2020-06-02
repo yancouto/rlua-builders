@@ -1,3 +1,14 @@
+//! The rlua-builders-derive crate provides derivers for the [`rlua-builders`] crate.
+//!
+//! This crate provides a deriver for [`LuaBuilder`] from [`rlua-builders`], as well
+//! as for [`UserData`] from [`rlua`].
+//! See [`rlua-builders`] for more documentation.
+//!
+//! [`UserData`]: https://docs.rs/rlua/*/rlua/trait.UserData.html
+//! [`LuaBuilder`]: https://docs.rs/rlua-builders/*/rlua_builders/trait.LuaBuilder.html
+//! [`rlua-builders`]: https://crates.io/crates/rlua-builders
+//! [`rlua`]: https://crates.io/crates/rlua
+
 use proc_macro::TokenStream;
 use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
@@ -90,6 +101,12 @@ fn enum_builder(name: Ident, de: DataEnum) -> TokenStream2 {
     }
 }
 
+/// Automatically derive the [`LuaBuilder`] trait for structs and enums
+///
+/// See the [`rlua-builders`] documentation for specifics of how this works.
+///
+/// [`LuaBuilder`]: https://docs.rs/rlua-builders/*/rlua_builders/trait.LuaBuilder.html
+/// [`rlua-builders`]: https://crates.io/crates/rlua-builders
 #[proc_macro_derive(LuaBuilder)]
 pub fn derive_struct_builder(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
@@ -104,6 +121,15 @@ pub fn derive_struct_builder(input: TokenStream) -> TokenStream {
     TokenStream::from(code)
 }
 
+/// Automatically derive [`UserData`] trait
+///
+/// This derive macro derives an **empty** [`UserData`] for the struct or enum.
+/// That means it won't have any custom methods. This is separate from the
+/// [`LuaBuilder`] deriver in case you want to derive [`UserData`] with a custom
+/// implementation.
+///
+/// [`UserData`]: https://docs.rs/rlua/*/rlua/trait.UserData.html
+/// [`LuaBuilder`]: https://docs.rs/rlua-builders/*/rlua_builders/trait.LuaBuilder.html
 #[proc_macro_derive(UserData)]
 pub fn derive_user_data(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
