@@ -3,6 +3,10 @@ name = "rlua-builders"
 version = "0.1.0"
 authors = ["Yan Soares Couto <yancouto@gmail.com>"]
 edition = "2018"
+license = "MIT"
+repository = "https://github.com/yancouto/rlua-builders"
+description = "Derive helpers for struct/enum for rlua"
+keywords = ["lua"]
 
 [dependencies]
 rlua = "0.17"
