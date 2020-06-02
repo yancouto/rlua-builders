@@ -1,5 +1,5 @@
 use proc_macro::TokenStream;
-use syn::{parse_macro_input, DeriveInput, Data, Fields, Ident};
+use syn::{parse_macro_input, DeriveInput, Data, Fields, Ident, FieldsUnnamed, Index};
 use proc_macro2::{TokenStream as TokenStream2};
 use quote::quote;
 
@@ -7,8 +7,22 @@ use quote::quote;
 fn from_unit(name: Ident) -> TokenStream2 {
     quote! {
         impl<'s> LuaStructBuilder<'s, Self> for #name {
-            fn builder(ctx: Context<'s>) -> Self {
-                Self
+            fn builder(ctx: rlua::Context<'s>) -> rlua::Result<Self> {
+                Ok(Self)
+            }
+        }
+    }
+}
+
+fn from_unnamed(name: Ident, unnamed: FieldsUnnamed) -> TokenStream2 {
+    let fields = unnamed;
+    let i = (0..fields.unnamed.len()).map(Index::from);
+    quote! {
+        impl<'s> LuaStructBuilder<'s, rlua::Function<'s>> for #name {
+            fn builder(ctx: rlua::Context<'s>) -> rlua::Result<rlua::Function<'s>> {
+                ctx.create_function(|_, args: #fields| {
+                    Ok(Self(#(args.#i,)*))
+                })
             }
         }
     }
@@ -26,6 +40,7 @@ pub fn derive_struct_builder(input: TokenStream) -> TokenStream {
 
     let code = match ds.fields {
         Fields::Unit => from_unit(name),
+        Fields::Unnamed(unnamed) => from_unnamed(name, unnamed),
         _ => panic!("Must be unit!"),
     };
 
