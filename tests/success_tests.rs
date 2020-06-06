@@ -20,7 +20,11 @@ fn test_all() {
     enum ComplexEnum {
         Unit,
         Tup(f32, Option<i32>),
-        Named { foo: String, bar: u8 },
+        Named {
+            foo: String,
+            #[default = 10]
+            baz: u8,
+        },
         // also testing tuples with a single thing inside
         Composite(Tup),
     };
@@ -56,10 +60,19 @@ fn test_all() {
             ComplexEnum::Unit,
             ComplexEnum::Tup(0.1, Some(42)),
             ComplexEnum::Named {
-                foo: "baz".to_owned(),
-                bar: 0
+                foo: "bar".to_owned(),
+                baz: 10,
             },
             ComplexEnum::Composite(Tup(0, "zero".to_owned())),
         ]
     );
+}
+
+#[test]
+fn test_user_data() {
+    #[derive(Debug, Clone)]
+    struct B;
+
+    #[derive(Debug, Clone, UserData)]
+    struct A(B);
 }

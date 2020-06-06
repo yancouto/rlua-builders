@@ -14,8 +14,10 @@ use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
 use syn::{
     parse_macro_input, Data, DataEnum, DataStruct, DeriveInput, Fields, FieldsNamed, FieldsUnnamed,
-    Ident, Index,
+    Ident, Index, Meta, MetaNameValue,
 };
+
+const DEFAULT: &'static str = "default";
 
 fn builder_for_unnamed(name: TokenStream2, fields: &FieldsUnnamed) -> TokenStream2 {
     let i = (0..fields.unnamed.len()).map(Index::from);
@@ -29,12 +31,29 @@ fn builder_for_unnamed(name: TokenStream2, fields: &FieldsUnnamed) -> TokenStrea
 
 fn builder_for_named(name: TokenStream2, fields: &FieldsNamed) -> TokenStream2 {
     let names = fields.named.iter().map(|x| &x.ident);
-    let types = fields.named.iter().map(|x| &x.ty);
+    const SYNTAX_ERR: &'static str = "Invalid syntax for default";
+    let (types, unwraps): (Vec<_>, Vec<_>) = fields
+        .named
+        .iter()
+        .map(|f| {
+            let ty = &f.ty;
+            let def = f.attrs.iter().find(|a| a.path.is_ident(DEFAULT)).map(|a| {
+                match a.parse_meta().expect(SYNTAX_ERR) {
+                    Meta::NameValue(MetaNameValue { lit, .. }) => quote!( .unwrap_or(#lit) ),
+                    _ => panic!(SYNTAX_ERR),
+                }
+            });
+            match def {
+                Some(ts) => (quote! { ::std::option::Option<#ty> }, ts),
+                None => (quote! (#ty), quote!()),
+            }
+        })
+        .unzip();
 
     quote! {
         ctx.create_function(|_, data: rlua::Table<'s>| {
             Ok(#name {
-                #( #names: data.get::<_, #types>(stringify!(#names))?, )*
+                #( #names: data.get::<_, #types>(stringify!(#names))? #unwraps , )*
             })
         })
     }
@@ -107,7 +126,7 @@ fn enum_builder(name: Ident, de: DataEnum) -> TokenStream2 {
 ///
 /// [`LuaBuilder`]: https://docs.rs/rlua-builders/*/rlua_builders/trait.LuaBuilder.html
 /// [`rlua-builders`]: https://crates.io/crates/rlua-builders
-#[proc_macro_derive(LuaBuilder)]
+#[proc_macro_derive(LuaBuilder, attributes(default))]
 pub fn derive_struct_builder(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let name = input.ident;

@@ -43,6 +43,9 @@
 //! Enums work in a similar way, except their constructor is a table where each function
 //! is equivalent to a struct builder.
 //!
+//! Additionally, you can use `#[default=VALUE]` to specify a default value for the field.
+//! That means if nil is specified in Lua, then instead that default will be used.
+//!
 //! ```
 //! # use rlua::UserData;
 //! # use rlua_builders::LuaBuilder;
@@ -50,7 +53,11 @@
 //! #[derive(LuaBuilder, UserData, Clone)]
 //! enum Valuables {
 //!     Coins(u32),
-//!     Book {name: String},
+//!     Book {
+//!         name: String,
+//!         #[default=true]
+//!         read: bool,
+//!     },
 //!     Knowledge,
 //! }
 //! ```
