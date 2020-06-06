@@ -1,6 +1,5 @@
 use rlua::UserData;
 use rlua_builders::*;
-use rlua_builders_derive::*;
 
 #[test]
 fn test_all() {

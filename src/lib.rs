@@ -19,12 +19,12 @@
 //! variants, and each of them works the same way as the struct builders defined above.
 //!
 //! ## Examples:
-//! This shows how to derive and use [`LuaBuilder`] on a simple struct. See [`rlua`] for
-//! more documentation on how to interop with Lua.
+//! This shows how to derive and use [`LuaBuilder`] and [`UserData`] on a simple struct. By default
+//! the derive macros are imported with `rlua-builders`. See [`rlua`] for more documentation on how
+//! to interop with Lua.
 //! ```
 //! use rlua::UserData;
-//! use rlua_builders::LuaBuilder;
-//! use rlua_builders_derive::{LuaBuilder, UserData};
+//! use rlua_builders::{LuaBuilder, UserData};
 //!
 //! #[derive(LuaBuilder, UserData, Clone, PartialEq, Debug)]
 //! struct Person {
@@ -49,8 +49,7 @@
 //!
 //! ```
 //! # use rlua::UserData;
-//! # use rlua_builders::LuaBuilder;
-//! # use rlua_builders_derive::*;
+//! # use rlua_builders::*;
 //! #[derive(LuaBuilder, UserData, Clone)]
 //! enum Valuables {
 //!     Coins(u32),
@@ -65,8 +64,7 @@
 //! If later binded to lua
 //! ```
 //! # use rlua::UserData;
-//! # use rlua_builders::LuaBuilder;
-//! # use rlua_builders_derive::*;
+//! # use rlua_builders::*;
 //! # #[derive(LuaBuilder, UserData, Clone)]
 //! # enum Valuables {}
 //! # rlua::Lua::new().context::<_, rlua::Result<()>>(|ctx| {
@@ -99,3 +97,6 @@ pub trait LuaBuilder<'s, T: ToLua<'s>>: UserData + Clone {
     /// Create a Lua builder for this type
     fn builder(ctx: Context<'s>) -> Result<T>;
 }
+
+#[cfg(feature = "derive")]
+pub use rlua_builders_derive::*;

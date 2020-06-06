@@ -2,7 +2,8 @@
 //!
 //! This crate provides a deriver for [`LuaBuilder`] from [`rlua-builders`], as well
 //! as for [`UserData`] from [`rlua`].
-//! See [`rlua-builders`] for more documentation.
+//! This is not usually imported directly. See [`rlua-builders`] for more
+//! documentation.
 //!
 //! [`UserData`]: https://docs.rs/rlua/*/rlua/trait.UserData.html
 //! [`LuaBuilder`]: https://docs.rs/rlua-builders/*/rlua_builders/trait.LuaBuilder.html
