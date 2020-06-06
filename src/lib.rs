@@ -44,7 +44,8 @@
 //! is equivalent to a struct builder.
 //!
 //! Additionally, you can use `#[default=VALUE]` to specify a default value for the field.
-//! That means if nil is specified in Lua, then instead that default will be used.
+//! That means if nil is specified in Lua, then instead that default will be used, without
+//! needing to manually use `Option` + `unwrap_or`.
 //!
 //! ```
 //! # use rlua::UserData;

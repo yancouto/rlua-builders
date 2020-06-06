@@ -13,30 +13,19 @@ use proc_macro::TokenStream;
 use proc_macro2::TokenStream as TokenStream2;
 use quote::quote;
 use syn::{
-    parse_macro_input, Data, DataEnum, DataStruct, DeriveInput, Fields, FieldsNamed, FieldsUnnamed,
-    Ident, Index, Meta, MetaNameValue,
+    parse_macro_input, Data, DataEnum, DataStruct, DeriveInput, Field, Fields, FieldsNamed,
+    FieldsUnnamed, Ident, Index, Meta, MetaNameValue,
 };
 
 const DEFAULT: &'static str = "default";
 
-fn builder_for_unnamed(name: TokenStream2, fields: &FieldsUnnamed) -> TokenStream2 {
-    let i = (0..fields.unnamed.len()).map(Index::from);
-    let types = fields.unnamed.iter().map(|f| &f.ty);
-    quote! {
-        ctx.create_function(|_, args: (#(#types,)*)| {
-            Ok(#name (#(args.#i,)*))
-        })
-    }
-}
-
-fn builder_for_named(name: TokenStream2, fields: &FieldsNamed) -> TokenStream2 {
-    let names = fields.named.iter().map(|x| &x.ident);
-    const SYNTAX_ERR: &'static str = "Invalid syntax for default";
-    let (types, unwraps): (Vec<_>, Vec<_>) = fields
-        .named
-        .iter()
+fn create_type_and_unwrap<'s>(
+    fields: impl Iterator<Item = &'s Field>,
+) -> (Vec<TokenStream2>, Vec<TokenStream2>) {
+    fields
         .map(|f| {
             let ty = &f.ty;
+            const SYNTAX_ERR: &'static str = "Invalid syntax for default";
             let def = f.attrs.iter().find(|a| a.path.is_ident(DEFAULT)).map(|a| {
                 match a.parse_meta().expect(SYNTAX_ERR) {
                     Meta::NameValue(MetaNameValue { lit, .. }) => quote!( .unwrap_or(#lit) ),
@@ -48,7 +37,22 @@ fn builder_for_named(name: TokenStream2, fields: &FieldsNamed) -> TokenStream2 {
                 None => (quote! (#ty), quote!()),
             }
         })
-        .unzip();
+        .unzip()
+}
+
+fn builder_for_unnamed(name: TokenStream2, fields: &FieldsUnnamed) -> TokenStream2 {
+    let i = (0..fields.unnamed.len()).map(Index::from);
+    let (types, unwraps): (Vec<_>, Vec<_>) = create_type_and_unwrap(fields.unnamed.iter());
+    quote! {
+        ctx.create_function(|_, args: (#(#types,)*)| {
+            Ok(#name (#(args.#i #unwraps ,)*))
+        })
+    }
+}
+
+fn builder_for_named(name: TokenStream2, fields: &FieldsNamed) -> TokenStream2 {
+    let names = fields.named.iter().map(|x| &x.ident);
+    let (types, unwraps): (Vec<_>, Vec<_>) = create_type_and_unwrap(fields.named.iter());
 
     quote! {
         ctx.create_function(|_, data: rlua::Table<'s>| {

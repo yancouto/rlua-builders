@@ -19,7 +19,7 @@ fn test_all() {
     #[derive(LuaBuilder, UserData, Clone, PartialEq, Debug)]
     enum ComplexEnum {
         Unit,
-        Tup(f32, Option<i32>),
+        Tup(#[default = 1.1] f32, Option<i32>),
         Named {
             foo: String,
             #[default = 10]
@@ -58,7 +58,7 @@ fn test_all() {
         ce,
         vec![
             ComplexEnum::Unit,
-            ComplexEnum::Tup(0.1, Some(42)),
+            ComplexEnum::Tup(1.1, Some(42)),
             ComplexEnum::Named {
                 foo: "bar".to_owned(),
                 baz: 10,
