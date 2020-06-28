@@ -74,7 +74,7 @@ fn builder_for_fields(name: TokenStream2, fields: &Fields) -> TokenStream2 {
 
 fn function_struct_builder(name: Ident, builder: TokenStream2) -> TokenStream2 {
     quote! {
-        impl<'s> LuaBuilder<'s, rlua::Function<'s>> for #name {
+        impl<'s> ::rlua_builders::LuaBuilder<'s, rlua::Function<'s>> for #name {
             fn builder(ctx: rlua::Context<'s>) -> rlua::Result<rlua::Function<'s>> {
                 #builder
             }
@@ -84,7 +84,7 @@ fn function_struct_builder(name: Ident, builder: TokenStream2) -> TokenStream2 {
 
 fn self_struct_builder(name: Ident, builder: TokenStream2) -> TokenStream2 {
     quote! {
-        impl<'s> LuaBuilder<'s, Self> for #name {
+        impl<'s> ::rlua_builders::LuaBuilder<'s, Self> for #name {
             fn builder(ctx: rlua::Context<'s>) -> rlua::Result<Self> {
                 #builder
             }
@@ -115,7 +115,7 @@ fn enum_builder(name: Ident, de: DataEnum) -> TokenStream2 {
         .unzip();
 
     quote! {
-        impl<'s> LuaBuilder<'s, rlua::Table<'s>> for #name {
+        impl<'s> ::rlua_builders::LuaBuilder<'s, rlua::Table<'s>> for #name {
             fn builder(ctx: rlua::Context<'s>) -> rlua::Result<rlua::Table<'s>> {
                 let t = ctx.create_table()?;
                 #( t.set(stringify!(#names), #builders?)?; )*
