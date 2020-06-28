@@ -1,4 +1,3 @@
-use rlua::UserData;
 use rlua_builders::*;
 
 #[test]

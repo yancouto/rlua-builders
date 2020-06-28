@@ -160,7 +160,7 @@ pub fn derive_user_data(input: TokenStream) -> TokenStream {
     let name = input.ident;
 
     let expanded = quote! {
-        impl UserData for #name {}
+        impl ::rlua::UserData for #name {}
     };
 
     TokenStream::from(expanded)
