@@ -11,7 +11,7 @@ readme = "README.md"
 
 [dependencies]
 rlua = "0.17"
-rlua-builders-derive = {version = "0.1.2", path = "rlua-builders-derive", optional = true}
+rlua-builders-derive = {version = "0.1.4", path = "rlua-builders-derive", optional = true}
 
 [features]
 default = ["derive"]

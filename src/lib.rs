@@ -2,11 +2,11 @@
 //! [`rlua`]. That means creating Rust struct/enums from Lua with almost the
 //! same syntax as in Rust!
 //!
-//! This crate itself only provides a trait definition, but [`rlua-builders-derive`]
-//! provides derive macros to automatically implement the defined trait for
-//! any struct or enum. It just needs to have [`UserData`] implemented for it. After
-//! that, simply call `StructOrEnum::builder(ctx)` to create a builder for that struct
-//! or enum.
+//! This crate itself only provides a trait definition, but using the (default) `derive`
+//! feature provides derive macros to automatically implement the defined trait for
+//! any struct or enum, as long as it has [`UserData`] implemented for it (for which a derive
+//! macro is also provided). After that, simply call `StructOrEnum::builder(ctx)` to create a
+//! builder for that struct or enum.
 //!
 //! ## What do these builders look like?
 //! - For [unit structs]: A builder is simply the unit value itself, which can be converted to
@@ -23,7 +23,6 @@
 //! the derive macros are imported with `rlua-builders`. See [`rlua`] for more documentation on how
 //! to interop with Lua.
 //! ```
-//! use rlua::UserData;
 //! use rlua_builders::{LuaBuilder, UserData};
 //!
 //! #[derive(LuaBuilder, UserData, Clone, PartialEq, Debug)]
